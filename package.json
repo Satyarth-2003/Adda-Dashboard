@@ -7,14 +7,17 @@
     "node": ">=18.0.0"
   },
   "resolutions": {
-    "@typescript-eslint/parser": "^7.0.0",
-    "@typescript-eslint/eslint-plugin": "^7.0.0",
-    "eslint": "^8.0.0"
+    "@typescript-eslint/parser": "7.0.2",
+    "@typescript-eslint/eslint-plugin": "7.0.2",
+    "eslint": "8.56.0",
+    "typescript": "^5.0.0"
   },
   "overrides": {
-    "@typescript-eslint/parser": "^7.0.0",
-    "@typescript-eslint/eslint-plugin": "^7.0.0"
+    "@typescript-eslint/parser": "7.0.2",
+    "@typescript-eslint/eslint-plugin": "7.0.2",
+    "eslint": "8.56.0"
   },
+  "packageManager": "npm@10.2.4",
   "scripts": {
     "start": "NODE_ENV=production node server.js",
     "dev": "NODE_ENV=development tsx watch server.ts",

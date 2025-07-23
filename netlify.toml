@@ -1,5 +1,5 @@
 [build]
-  command = "npm install --legacy-peer-deps && npm run build"
+  command = "./netlify-build.sh"
   publish = "dist"
   functions = "netlify/functions"
 
@@ -9,6 +9,8 @@
   NODE_OPTIONS = "--max_old_space_size=4096"
   CI = "false"
   NPM_FLAGS = "--legacy-peer-deps"
+  NPM_CONFIG_LEGACY_PEER_DEPS = "true"
+  NODE_VERBOSE = "true"
   
 [dev]
   framework = "#custom"
