@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YouTube Transcript Tester</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        textarea {
+            width: 100%;
+            min-height: 200px;
+            padding: 10px;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .example {
+            background-color: #f5f5f5;
+            padding: 10px;
+            border-radius: 4px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>YouTube Transcript Fetcher</h1>
+        <div>
+            <label for="videoId">YouTube Video ID:</label>
+            <input type="text" id="videoId" placeholder="e.g., sV2BLi0_6Kk" style="width: 300px; padding: 5px;">
+            <button onclick="fetchTranscript()">Get Transcript</button>
+        </div>
+        
+        <div>
+            <h3>Transcript:</h3>
+            <div id="loading" style="display: none;">Loading transcript...</div>
+            <div id="error" style="color: red; display: none;"></div>
+            <textarea id="transcript" readonly></textarea>
+        </div>
+        
+        <div class="example">
+            <h3>Example Video IDs:</h3>
+            <ul>
+                <li><strong>Hindi Video:</strong> sV2BLi0_6Kk (Should have Hindi transcript)</li>
+                <li><strong>English Video:</strong> dQw4w9WgXcQ (Rick Astley - Never Gonna Give You Up)</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        async function fetchTranscript() {
+            const videoId = document.getElementById('videoId').value.trim();
+            if (!videoId) {
+                alert('Please enter a YouTube Video ID');
+                return;
+            }
+
+            const loadingElement = document.getElementById('loading');
+            const errorElement = document.getElementById('error');
+            const transcriptElement = document.getElementById('transcript');
+            
+            // Reset UI
+            loadingElement.style.display = 'block';
+            errorElement.style.display = 'none';
+            transcriptElement.value = '';
+
+            try {
+                // For local testing, use the Netlify function path
+                const response = await fetch(`/.netlify/functions/youtube-transcript/transcript.py?video_id=${videoId}`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    transcriptElement.value = data.transcript;
+                    if (data.message) {
+                        transcriptElement.value = `[${data.message}]\n\n${data.transcript}`;
+                    }
+                } else {
+                    errorElement.textContent = data.error || 'Failed to fetch transcript';
+                    errorElement.style.display = 'block';
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                errorElement.textContent = 'An error occurred while fetching the transcript';
+                errorElement.style.display = 'block';
+            } finally {
+                loadingElement.style.display = 'none';
+            }
+        }
+    </script>
+</body>
+</html>
