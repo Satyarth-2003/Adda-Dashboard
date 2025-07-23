@@ -1,15 +1,19 @@
 [build]
-  command = "pip install -r netlify/functions/youtube-transcript/requirements.txt -t python"
+  command = "npm run build"
   publish = "dist"
   functions = "netlify/functions"
 
+[build.environment]
+  NODE_VERSION = "20"
+  NPM_VERSION = "latest"
+
 [functions]
   node_bundler = "esbuild"
-  external_node_modules = ["youtube-transcript-api"]
+  external_node_modules = ["@google-cloud/text-to-speech", "@googleapis/youtube"]
 
 [[redirects]]
-  from = "/api/transcript"
-  to = "/.netlify/functions/youtube-transcript/transcript.py"
+  from = "/api/*"
+  to = "/.netlify/functions/server/:splat"
   status = 200
 
 [[redirects]]

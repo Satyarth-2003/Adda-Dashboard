@@ -84,20 +84,26 @@ export class VideoAnalysisAPI {
     return match && match[2].length === 11 ? match[2] : null;
   }
 
-  // Get transcript using youtube-transcript.io
+  // Get transcript using youtube-transcript-api
   static async getTranscript(youtubeUrl: string): Promise<TranscriptResponse> {
     const videoId = this.extractVideoId(youtubeUrl);
     if (!videoId) {
       return { transcript: '', error: 'Invalid YouTube URL' };
     }
     try {
-      const response = await fetch('/api/transcript', {
+      const response = await fetch('/api/yt_transcript', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ videoId }),
       });
       if (response.ok) {
         const data = await response.json();
+        if (data.transcript) {
+          return { transcript: data.transcript };
+        } else if (data.error) {
+          console.error('Transcript API error:', data.error);
+          return { transcript: '', error: data.error };
+        }
         if (data.transcript && data.transcript.length > 0) {
           return { transcript: data.transcript };
         }

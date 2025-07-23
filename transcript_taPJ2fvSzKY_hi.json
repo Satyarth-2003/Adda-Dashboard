@@ -1,0 +1,8 @@
+{
+  "status": "error",
+  "message": "Failed to create transcript",
+  "details": {
+    "status": "error",
+    "message": "401 Client Error: Unauthorized for url: https://api.supadata.ai/v1/transcripts"
+  }
+}

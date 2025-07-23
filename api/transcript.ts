@@ -1,8 +1,9 @@
 import { Router, Request, Response } from 'express';
-import { getFormattedTranscript } from '../src/services/youtubeCaptions.js';
+import fetch from 'node-fetch';
 
 const router = Router();
 
+// Proxy requests to the Python backend
 router.post('/', async (req: Request, res: Response) => {
   try {
     // Input validation
@@ -14,23 +15,31 @@ router.post('/', async (req: Request, res: Response) => {
       });
     }
 
-    const { videoId, language = 'en' } = req.body;
+    const { videoId, language = 'hi' } = req.body;
     
     try {
-      // Get transcript using YouTube Data API
-      const transcript = await getFormattedTranscript(videoId, language);
+      // Forward the request to the Python backend
+      const response = await fetch('http://localhost:5001/yt_transcript', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ videoId, language }),
+      });
+
+      const data = await response.json();
       
-      if (!transcript) {
-        throw new Error('No transcript available');
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to fetch transcript');
       }
       
       return res.json({
         success: true,
-        transcript,
-        language
+        transcript: data.transcript,
+        language: data.language || language
       });
     } catch (error) {
-      console.error('Error fetching transcript:', error);
+      console.error('Error fetching transcript from Python backend:', error);
       return res.status(404).json({
         success: false,
         error: 'Transcript not found',

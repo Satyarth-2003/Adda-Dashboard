@@ -72,6 +72,32 @@ const errorHandler = (err: Error, req: Request, res: Response, next: NextFunctio
 
 app.use(errorHandler);
 
+// Create HTTP server
+const server = createServer(app);
+
+// Handle server errors
+server.on('error', (error: NodeJS.ErrnoException) => {
+  if (error.syscall !== 'listen') {
+    throw error;
+  }
+
+  const bind = typeof PORT === 'string' ? `Pipe ${PORT}` : `Port ${PORT}`;
+
+  // Handle specific listen errors with friendly messages
+  switch (error.code) {
+    case 'EACCES':
+      console.error(`${bind} requires elevated privileges`);
+      process.exit(1);
+      break;
+    case 'EADDRINUSE':
+      console.error(`${bind} is already in use`);
+      process.exit(1);
+      break;
+    default:
+      throw error;
+  }
+});
+
 // Start server function
 const startServer = (): void => {
   const PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : 3000;
@@ -109,28 +135,7 @@ const startServer = (): void => {
   });
 };
 
-// Handle server errors
-server.on('error', (error: NodeJS.ErrnoException) => {
-  if (error.syscall !== 'listen') {
-    throw error;
-  }
 
-  const bind = typeof PORT === 'string' ? `Pipe ${PORT}` : `Port ${PORT}`;
-
-  // Handle specific listen errors with friendly messages
-  switch (error.code) {
-    case 'EACCES':
-      console.error(`${bind} requires elevated privileges`);
-      process.exit(1);
-      break;
-    case 'EADDRINUSE':
-      console.error(`${bind} is already in use`);
-      process.exit(1);
-      break;
-    default:
-      throw error;
-  }
-});
 
 // Start the server
 startServer();
