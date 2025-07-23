@@ -6,6 +6,7 @@
 [build.environment]
   NODE_VERSION = "20"
   NPM_VERSION = "latest"
+  NODE_OPTIONS = "--max_old_space_size=4096"
 
 [functions]
   node_bundler = "esbuild"
@@ -15,8 +16,18 @@
   from = "/api/*"
   to = "/.netlify/functions/server/:splat"
   status = 200
+  force = true
 
 [[redirects]]
   from = "/*"
   to = "/index.html"
   status = 200
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-XSS-Protection = "1; mode=block"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://www.google-analytics.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://*.googleapis.com https://*.supadata.ai;"
